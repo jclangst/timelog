@@ -4,7 +4,7 @@ from tkinter import filedialog
 
 filename = filedialog.askopenfilename()
 reader = csv.reader(open(filename))
-writer = csv.writer(open(filename[:-4] + "_separated.csv", "w+"))
+writer = csv.writer(open(filename[:-4] + "_separated.csv", "w+", newline=''))
 
 for row in reader:
     startDate = datetime.datetime.strptime(row[3], "%m/%d/%Y")
