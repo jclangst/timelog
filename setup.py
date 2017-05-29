@@ -8,6 +8,8 @@ os.environ['TK_LIBRARY'] = "C:\\Users\\jackc\\AppData\\Local\\Programs\\Python\\
 
 # Dependencies are automatically detected, but it might need fine tuning.
 build_exe_options = {"packages": ["datetime", "tkinter", "csv", "ast"],
+                     "include_files": [r"C:\Users\jackc\AppData\Local\Programs\Python\Python36-32\DLLs\tcl86t.dll",
+                    r"C:\Users\jackc\AppData\Local\Programs\Python\Python36-32\DLLs\tk86t.dll"],
                      "optimize": 2,}
 
 bdist_msi_options = {
