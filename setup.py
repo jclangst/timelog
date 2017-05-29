@@ -1,6 +1,11 @@
 import sys
 from cx_Freeze import setup, Executable
 
+import os
+os.environ['TCL_LIBRARY'] = "C:\\Python\\py3.5\\tcl\\tcl8.6"
+os.environ['TK_LIBRARY'] = "C:\\Python\\py3.5\\tcl\\tk8.6"
+
+
 # Dependencies are automatically detected, but it might need fine tuning.
 build_exe_options = {"packages": ["datetime", "tkinter", "csv", "ast"],
                      "optimize": 2,}
