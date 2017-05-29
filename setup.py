@@ -2,8 +2,8 @@ import sys
 from cx_Freeze import setup, Executable
 
 import os
-os.environ['TCL_LIBRARY'] = "C:\\Users\\jackc\\AppData\\Programs\\Python\\Python36-32\\tcl\\tcl8.6"
-os.environ['TK_LIBRARY'] = "C:\\Users\\jackc\\AppData\\Programs\\Python\\Python36-32\\tcl\\tk8.6"
+os.environ['TCL_LIBRARY'] = "C:\\Users\\jackc\\AppData\\Local\\Programs\\Python\\Python36-32\\tcl\\tcl8.6"
+os.environ['TK_LIBRARY'] = "C:\\Users\\jackc\\AppData\\Local\\Programs\\Python\\Python36-32\\tcl\\tk8.6"
 
 
 # Dependencies are automatically detected, but it might need fine tuning.
