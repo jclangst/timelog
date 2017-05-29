@@ -34,5 +34,4 @@ setup(  name = "Timesheet Reformatter",
         executables = [Executable("TimesheetFormatter.py",
                                   base=base,
                                   shortcutName="TimeSheet Formatter",
-                                  shortcutDir="DesktopFolder",
-                                  icon="ico.png")])
+                                  shortcutDir="DesktopFolder")])
