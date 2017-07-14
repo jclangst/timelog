@@ -28,6 +28,9 @@ class TimesheetFormatter:
         else:
             employeeData = self.loadEmployeeInfo(employeeFile)
 
+
+        self.separate(timesheetData)
+
         dayLog = self.createDayLog(timesheetData)
 
         self.writeFormattedOutput(dayLog, employeeData, timesheetFile[:-4]+"_output.csv")
@@ -74,7 +77,6 @@ class TimesheetFormatter:
                     logs.insert(i, new1)
 
 
-
     # returns a mapping of each employee's id to their hours worked for each day
     def createDayLog(self, timesheetData):
 
@@ -105,17 +107,20 @@ class TimesheetFormatter:
     def writeFormattedOutput(self, dayLog, employeeData, outputFile):
         with open(outputFile, 'w+', newline='') as f:
             writer = csv.writer(f)
+            writer.writerow(["Employee ID", "State Number", "Job Code", "Pay Code", "Date", "Hours Logged"])
 
             errors = []
 
             for employee in dayLog:
                 if employee in employeeData:
                     for date in sorted(dayLog[employee]):
-                        output = [employeeData[employee][0],
-                                  date.strftime("%m/%d/%Y"),
-                                  str(round(dayLog[employee][date],2)),
+                        output = [employee,
+                                  employeeData[employee][0],
                                   employeeData[employee][1],
-                                  employeeData[employee][2]]
+                                  employeeData[employee][2],
+                                  date.strftime("%m/%d/%Y"),
+                                  str(round(dayLog[employee][date],2))]
+
                         writer.writerow(output)
                 else:
                     errors.append(employee)
@@ -182,37 +187,66 @@ class TimesheetFormatter:
     def validateEmployeeInfo(self, employeeFile):
         with open(employeeFile) as f:
             reader = csv.reader(f)
-            next(reader)
+            labels = next(reader)
+
+            for label in labels:
+                for char in label:
+                    if char.isdigit():
+                        messagebox.showerror("Error: Timesheet Info",
+                                             "It does not appear that the employee ID file has proper labels!\n\n"
+                                             "The first row of the csv file should have the following labels on line 1:\n\n"
+                                             "Employee ID,State Number,Job Code,Pay Code")
+
+                        return False
+
             for i, row in enumerate(reader):
                 if not len(row) == 4 or not row[0].isdigit() or len(row[1]) != 6:
                     messagebox.showerror("Error: Employee Info",
-                                         "Incorrect Employee Info on Line " + str(i + 2) + " of " + employeeFile +
-                                         "\n\nMust follow format provided in employee_info_example.csv!")
+                                         "Incorrect Employee Info on Line " + str(i + 2) + " of " + employeeFile)
                     return False
         return True
 
     def validateTimeSheet(self, timesheetFile):
+        error = 0
 
         with open(timesheetFile) as f:
             reader = csv.reader(f)
-            next(reader)
+            labels = next(reader)
+
+            for label in labels:
+                for char in label:
+                    if char.isdigit():
+                        messagebox.showerror("Error: Timesheet Info",
+                                             "It does not appear that the timesheet has proper labels!\n\n"
+                                             "The first row of the csv file should have the following labels on line 1:\n\n"
+                                             "Employee Id,Clock-In Date,Clock-In Time,Clock-Out Date, Clock-In Time,Hours Worked")
+
+                        return False
+
             for i, row in enumerate(reader):
                 if not len(row) == 6 or not row[0].isdigit() or not (row[5].isdigit() or isinstance(literal_eval(row[5]), float)):
                     pass
                 else:
                     try:
+                        error = 2
                         datetime.strptime(row[1], "%m/%d/%Y")
+                        error = 4
                         datetime.strptime(row[3], "%m/%d/%Y")
+                        error = 3
                         datetime.strptime(row[2], "%I:%M %p")
+                        error = 5
                         datetime.strptime(row[4], "%I:%M %p")
-                        continue
                     except ValueError as err:
-                        pass
 
-                messagebox.showerror("Error: Timesheet Info",
-                                     "Incorrect Timesheet Info on Line " + str(i + 2) + " of " + timesheetFile +
-                                     "\n\nMust follow format provided in timesheet_info_example.csv!")
-                return False
+                        if(error == 2 or error == 4):
+                            format = "mm/dd/yyyy"
+                        else:
+                            format = "hh:mm pm"
+
+                        messagebox.showerror("Error: Timesheet Info",
+                                             "Incorrect Timesheet Info on Line " + str(i + 2) + " Column " + str(error) +
+                                             " of " + timesheetFile +".\n\n Correct format should be " + format + ".")
+                        return False
         return True
 
 
@@ -223,12 +257,9 @@ class TimesheetFormatter:
     def getTimesheetFile(self):
         messagebox.showinfo("Select Timesheet Information",
                             "In the next prompt, select your TIMESHEET INFORMATION.")
-        while (True):
-            timesheetFile= filedialog.askopenfilename()
-            if timesheetFile:
-                break
-            messagebox.showerror("Error: Select File",
-                                 "You must select the timesheet information!")
+        timesheetFile= filedialog.askopenfilename()
+        if not timesheetFile:
+            exit()
 
         return timesheetFile
 
@@ -236,12 +267,10 @@ class TimesheetFormatter:
         messagebox.showinfo("Select Employee Information",
                             "In the next prompt, select your EMPLOYEE INFORMATION.")
 
-        while (True):
-            employeeFile = filedialog.askopenfilename()
-            if employeeFile:
-                break
-            messagebox.showerror("Error: Select File",
-                                 "You must select the employee information!")
+
+        employeeFile = filedialog.askopenfilename()
+        if not employeeFile:
+            exit()
 
         return employeeFile
 
